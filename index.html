@@ -97,7 +97,7 @@ function cat(k){return CATS.find(function(c){return c.k===k})||CATS[0]}
 function save(it){
   if(col){col.doc(it.id).set({name:it.name,status:it.status,c:it.c,t:it.t,d:it.d,b:it.b,h:it.h||[],sn:it.sn||0}).catch(function(){setNote('nsave')});}
 }
-function due(x){var t=(x.b||x.t)+(x.d||DEFD[x.c]||14)*DAY*0.85;return x.sn&&x.sn>t?x.sn:t}
+function due(x){var d=(x.d||DEFD[x.c]||14),t=(x.b||x.t)+(d-Math.min(3,d*0.5))*DAY;return x.sn&&x.sn>t?x.sn:t}
 function soon(x){return x.status==='ok'&&due(x)<=Date.now()}
 function restock(it){
   var n=Date.now(),iv=n-(it.b||n);
@@ -107,7 +107,7 @@ function restock(it){
 }
 function setStatus(id,s){
   var it=items.find(function(x){return x.id===id});if(!it)return;
-  if(s==='ok')restock(it);else if(s==='snooze'){it.sn=Date.now()+Math.max(1,(it.d||14)*0.25)*DAY}else it.status=s;
+  if(s==='ok')restock(it);else if(s==='snooze'){it.sn=Date.now()+DAY}else it.status=s;
   it.t=Date.now();save(it);render();
 }
 function setDur(id,v){var it=items.find(function(x){return x.id===id});v=parseInt(v,10);if(!it||!(v>0))return;it.d=Math.min(365,v);save(it);render()}
